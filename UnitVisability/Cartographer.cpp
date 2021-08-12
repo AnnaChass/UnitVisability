@@ -59,10 +59,10 @@ int Cartographer::Count()
 
 		// cutting off obviously unsuitable options: \
             checking if a (un)visible unit is included in a surrounding square with sides of 2 distance
+ 
 		// checking unit to the right from cur_unit
 		list<Unit>::iterator unit = cur_unit;
-		unit++;
-		while(unit != unitList.end())
+		for (unit++; unit != unitList.end(); unit++)
 		{
 			// checking if unit (and all the following units) is too far from cur_unit
 			if (unit->x > x_right) 
@@ -74,22 +74,20 @@ int Cartographer::Count()
 			{
 				// unit is unvisible for cur_unit
 				cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
-				unit++;
 				continue;
 			}
 
 			// continue checking
 			cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
 
-			unit++;
 		}
+
 		// checking unit to the left from cur_unit
 		unit = cur_unit;
 		if (unit != unitList.begin())
 		{
-			do
+			for (unit--; ; unit--)
 			{
-				unit--;
 				// checking if unit (and all the previous units) is too far from cur_unit
 				if (unit->x < x_left)
 					break;
@@ -107,7 +105,10 @@ int Cartographer::Count()
 				{					
 					cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
 				}
-			} while (unit != unitList.begin());
+
+				if (unit == unitList.begin())
+					break;
+			}
 		}
 	}
 	
