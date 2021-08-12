@@ -47,17 +47,15 @@ int Cartographer::ReadFile()
 	return 1;
 }
 
-// ÂÎÇÌÎÆÍÎ, ÑËÅÄÓÅÒ ÈÇÁÀÂÈÒÜÑß ÎÒ ÈÒÅÐÀÒÎÐÎÂ
-// ÇÀÌÅÍÈÒÜ (*...). ÍÀ ...->
 int Cartographer::Count()
 {
 	// pairwise comparison of units
 	for (list<Unit>::iterator cur_unit = unitList.begin(); cur_unit != unitList.end(); ++cur_unit)
 	{
-		int x_left = (*cur_unit).x - distance,
-			x_right = (*cur_unit).x + distance,
-			y_low = (*cur_unit).y - distance,
-			y_high = (*cur_unit).y + distance;
+		int x_left = cur_unit->x - distance,
+			x_right = cur_unit->x + distance,
+			y_low = cur_unit->y - distance,
+			y_high = cur_unit->y + distance;
 
 		// cutting off obviously unsuitable options: \
             checking if a (un)visible unit is included in a surrounding square with sides of 2 distance
@@ -67,21 +65,21 @@ int Cartographer::Count()
 		while(unit != unitList.end())
 		{
 			// checking if unit (and all the following units) is too far from cur_unit
-			if ((*unit).x > x_right) 
+			if (unit->x > x_right) 
 				break;
 
 			// checking if unit is unsuitable by y coordinate
-			if ((*unit).y < y_low ||
-				(*unit).y > y_high)
+			if (unit->y < y_low ||
+				unit->y > y_high)
 			{
 				// unit is unvisible for cur_unit
-				cout << "(" << (*cur_unit).x << "," << (*cur_unit).y << ") does not see (" << (*unit).x << "," << (*unit).y << ")" << endl;
+				cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
 				unit++;
 				continue;
 			}
 
 			// continue checking
-			cout << "(" << (*cur_unit).x << "," << (*cur_unit).y << ") probably sees (" << (*unit).x << "," << (*unit).y << ")" << endl;
+			cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
 
 			unit++;
 		}
@@ -93,26 +91,28 @@ int Cartographer::Count()
 			{
 				unit--;
 				// checking if unit (and all the previous units) is too far from cur_unit
-				if ((*unit).x < x_left)
+				if (unit->x < x_left)
 					break;
 
 				// checking if unit is unsuitable by y coordinate
-				if ((*unit).y < y_low ||
-					(*unit).y > y_high)
+				if (unit->y < y_low ||
+					unit->y > y_high)
 				{
 					// unit is unvisible for cur_unit
-					cout << "(" << (*cur_unit).x << "," << (*cur_unit).y << ") does not see (" << (*unit).x << "," << (*unit).y << ")" << endl;
+					cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
 				}
 				
 				// continue checking
 				else
-				{
-					
-					cout << "(" << (*cur_unit).x << "," << (*cur_unit).y << ") probably sees (" << (*unit).x << "," << (*unit).y << ")" << endl;
+				{					
+					cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
 				}
 			} while (unit != unitList.begin());
 		}
 	}
+	
+	
+	
 	return 1;
 }
 
