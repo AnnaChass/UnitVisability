@@ -48,9 +48,11 @@ int Cartographer::ReadFile()
 }
 
 // Â "checking if cur_unit looks the other way" ÏĞÎÏÈÑÀÒÜ ÎÒÄÅËÜÍÓŞ ÏĞÎÂÅĞÊÓ ÍÓËß
-// ÊÀÊ ÌÈÍÈÌÓÌ ÅÙÅ ÏĞÎÂÅĞÊÀ ÍÀ ĞÀÑÑÒÎßÍÈÅ ÎÒ CUR_UNIT ÄÎ UNIT + ÏĞÎÂÅĞÊÀ ÍÀ 360 ÃĞÀÄÓÑÎÂ ÎÁÇÎĞÀ
+// ÏĞÎÂÅĞÊÀ ÍÀ ĞÀÑÑÒÎßÍÈÅ ÎÒ CUR_UNIT ÄÎ UNIT 
+// ÏĞÎÂÅĞÊÀ ÍÀ 360 ÃĞÀÄÓÑÎÂ ÎÁÇÎĞÀ
 int Cartographer::Count()
 {
+	squared_distance = distance * distance;
 	// pairwise comparison of units
 	for (list<Unit>::iterator cur_unit = unitList.begin(); cur_unit != unitList.end(); ++cur_unit)
 	{
@@ -62,8 +64,7 @@ int Cartographer::Count()
 		// cutting off obviously unsuitable options: \
             checking if a (un)visible unit is included in a surrounding square with sides of 2 distance
  
-		// checking unit to the right from cur_unit
-		
+		// checking unit to the right from cur_unit		
 		list<Unit>::iterator unit = cur_unit;
 		for (unit++; unit != unitList.end(); unit++)
 		{
@@ -87,9 +88,16 @@ int Cartographer::Count()
 				continue;
 			}
 
-			// continue checking
+			// checking distance between unit and cur_unit
+			if (!DistanceChecking(cur_unit, unit))
+			{
+				// unit is unvisible for cur_unit
+				cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+				continue;
+			}
 
-			cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
+			// unit is seen by cur_unit
+			cout << "(" << cur_unit->x << "," << cur_unit->y << ") sees (" << unit->x << "," << unit->y << ")" << endl;
 		}
 
 		// checking unit to the left from cur_unit
@@ -120,9 +128,16 @@ int Cartographer::Count()
 						continue;
 					}
 
-					// continue checking
-					cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
-				
+					// checking distance between unit and cur_unit
+					if (!DistanceChecking(cur_unit, unit))
+					{
+						// unit is unvisible for cur_unit
+						cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+						continue;
+					}
+
+					// unit is seen by cur_unit
+					cout << "(" << cur_unit->x << "," << cur_unit->y << ") sees (" << unit->x << "," << unit->y << ")" << endl;
 				}
 
 				if (unit == unitList.begin())
@@ -130,8 +145,6 @@ int Cartographer::Count()
 			}
 		}
 	}
-	
-	
 	
 	return 1;
 }
@@ -157,6 +170,14 @@ int Cartographer::AngleChecking(list<Unit>::iterator cur_unit, list<Unit>::itera
 		// unit is unvisible for cur_unit
 		return 0;
 	}
+	return 1;
+}
+
+int Cartographer::DistanceChecking(list<Unit>::iterator cur_unit, list<Unit>::iterator unit)
+{
+	// checking distance between unit and cur_unit
+	if ((cur_unit->x - unit->x) * (cur_unit->x - unit->x) + (cur_unit->y - unit->y) * (cur_unit->y - unit->y) > squared_distance)
+		return 0;
 	return 1;
 }
 
