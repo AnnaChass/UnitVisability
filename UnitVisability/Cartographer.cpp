@@ -47,6 +47,8 @@ int Cartographer::ReadFile()
 	return 1;
 }
 
+// б "checking if cur_unit looks the other way" опнохяюрэ нрдекэмсч опнбепйс мскъ
+// йюй лхмхлсл еые опнбепйю мю пюяярнъмхе нр CUR_UNIT дн UNIT + опнбепйю мю 360 цпюдсянб нагнпю
 int Cartographer::Count()
 {
 	// pairwise comparison of units
@@ -61,6 +63,7 @@ int Cartographer::Count()
             checking if a (un)visible unit is included in a surrounding square with sides of 2 distance
  
 		// checking unit to the right from cur_unit
+		
 		list<Unit>::iterator unit = cur_unit;
 		for (unit++; unit != unitList.end(); unit++)
 		{
@@ -77,9 +80,16 @@ int Cartographer::Count()
 				continue;
 			}
 
-			// continue checking
-			cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
+			if (!AngleChecking(cur_unit, unit))
+			{
+				// unit is unvisible for cur_unit
+				cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+				continue;
+			}
 
+			// continue checking
+
+			cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
 		}
 
 		// checking unit to the left from cur_unit
@@ -102,8 +112,17 @@ int Cartographer::Count()
 				
 				// continue checking
 				else
-				{					
+				{
+					if (!AngleChecking(cur_unit, unit))
+					{
+						// unit is unvisible for cur_unit
+						cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+						continue;
+					}
+
+					// continue checking
 					cout << "(" << cur_unit->x << "," << cur_unit->y << ") probably sees (" << unit->x << "," << unit->y << ")" << endl;
+				
 				}
 
 				if (unit == unitList.begin())
@@ -114,6 +133,30 @@ int Cartographer::Count()
 	
 	
 	
+	return 1;
+}
+
+int Cartographer::AngleChecking(list<Unit>::iterator cur_unit, list<Unit>::iterator unit)
+{
+	// checking if unit comes into cur_unit's view
+	float tgA = cur_unit->direction_x == 0 ? MAX_TG : (cur_unit->direction_y / cur_unit->direction_x),
+		tgB = sector / 2,
+	    tgG = (unit->x - cur_unit->y == 0) ? MAX_TG : (unit->y - cur_unit->y) / (unit->x - cur_unit->y),
+		tgAminG = (tgA * tgG == -1) ? 0 : (tgA - tgG) / (1 + tgA * tgG);
+
+	if (tgAminG > tgB)
+	{
+		// unit is unvisible for cur_unit
+		return 0;
+	}
+
+	// checking if cur_unit looks the other way
+	if (!(cur_unit->direction_x * (unit->x - cur_unit->x) > 0 &&
+		cur_unit->direction_y * (unit->y - cur_unit->y) > 0))
+	{
+		// unit is unvisible for cur_unit
+		return 0;
+	}
 	return 1;
 }
 

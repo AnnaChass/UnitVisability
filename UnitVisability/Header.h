@@ -2,6 +2,7 @@
 #include <iostream>
 #include <list>
 #include <fstream>
+#define MAX_TG 1000
 
 const char FILENAME[] = "data.txt";
 struct Unit

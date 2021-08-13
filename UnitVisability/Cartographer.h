@@ -12,7 +12,7 @@ private:
 
 	int ReadFile();
 	int Count();
-	//bool Sort(list<Unit>::iterator it1, list<Unit>::iterator it2);
+	int AngleChecking(list<Unit>::iterator cur_unit, list<Unit>::iterator unit);
 
 public:
 	Cartographer();
