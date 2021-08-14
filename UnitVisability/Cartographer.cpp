@@ -47,15 +47,14 @@ int Cartographer::ReadFile()
 	return 1;
 }
 
-// б "checking if cur_unit looks the other way" опнохяюрэ нрдекэмсч опнбепйс мскъ
-// опнбепйю мю пюяярнъмхе нр CUR_UNIT дн UNIT 
-// опнбепйю мю 360 цпюдсянб нагнпю
 int Cartographer::Count()
 {
 	squared_distance = distance * distance;
+	tgB = tan((sector / 2) * PI / 180);
 	// pairwise comparison of units
 	for (list<Unit>::iterator cur_unit = unitList.begin(); cur_unit != unitList.end(); ++cur_unit)
 	{
+		tgA = cur_unit->direction_x == 0 ? MAX_TG : (cur_unit->direction_y / cur_unit->direction_x);
 		int x_left = cur_unit->x - distance,
 			x_right = cur_unit->x + distance,
 			y_low = cur_unit->y - distance,
@@ -81,6 +80,7 @@ int Cartographer::Count()
 				continue;
 			}
 
+			// checking if unit comes into cur_unit's view
 			if (!AngleChecking(cur_unit, unit))
 			{
 				// unit is unvisible for cur_unit
@@ -116,28 +116,34 @@ int Cartographer::Count()
 				{
 					// unit is unvisible for cur_unit
 					cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
-				}
+				}				
 				
-				// continue checking
 				else
 				{
+					// continue cheching
+					
+					// checking if unit comes into cur_unit's view
 					if (!AngleChecking(cur_unit, unit))
 					{
 						// unit is unvisible for cur_unit
 						cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
-						continue;
+						
 					}
 
-					// checking distance between unit and cur_unit
-					if (!DistanceChecking(cur_unit, unit))
+					else
 					{
-						// unit is unvisible for cur_unit
-						cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
-						continue;
-					}
+						// checking distance between unit and cur_unit
+						if (!DistanceChecking(cur_unit, unit))
+						{
+							// unit is unvisible for cur_unit
+							cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+							
+						}
 
-					// unit is seen by cur_unit
-					cout << "(" << cur_unit->x << "," << cur_unit->y << ") sees (" << unit->x << "," << unit->y << ")" << endl;
+						// unit is seen by cur_unit
+						else 
+							cout << "(" << cur_unit->x << "," << cur_unit->y << ") sees (" << unit->x << "," << unit->y << ")" << endl;
+					}
 				}
 
 				if (unit == unitList.begin())
@@ -151,12 +157,16 @@ int Cartographer::Count()
 
 int Cartographer::AngleChecking(list<Unit>::iterator cur_unit, list<Unit>::iterator unit)
 {
-	// checking if unit comes into cur_unit's view
-	float tgA = cur_unit->direction_x == 0 ? MAX_TG : (cur_unit->direction_y / cur_unit->direction_x),
-		tgB = sector / 2,
-	    tgG = (unit->x - cur_unit->y == 0) ? MAX_TG : (unit->y - cur_unit->y) / (unit->x - cur_unit->y),
-		tgAminG = (tgA * tgG == -1) ? 0 : (tgA - tgG) / (1 + tgA * tgG);
+	if (sector == 360)
+		return 1;
 
+	// checking if unit comes into cur_unit's view
+	
+	tgG = (unit->x - cur_unit->x == 0) ? MAX_TG : (unit->y - cur_unit->y) / (unit->x - cur_unit->x);
+	tgAminG = (tgA * tgG == -1) ? 0 : (tgA - tgG) / (1 + tgA * tgG);
+
+	if (tgAminG * tgAminG == MAX_TG * MAX_TG)
+		Modulo(tgAminG);
 	if (tgAminG > tgB)
 	{
 		// unit is unvisible for cur_unit
@@ -164,8 +174,10 @@ int Cartographer::AngleChecking(list<Unit>::iterator cur_unit, list<Unit>::itera
 	}
 
 	// checking if cur_unit looks the other way
-	if (!(cur_unit->direction_x * (unit->x - cur_unit->x) > 0 &&
-		cur_unit->direction_y * (unit->y - cur_unit->y) > 0))
+	float temp_x = (unit->x - cur_unit->x == 0) ? 1 : unit->x - cur_unit->x,
+		temp_y = (unit->y - cur_unit->y == 0) ? 1 : unit->y - cur_unit->y;
+	if (!(cur_unit->direction_x * temp_x >= 0 &&
+		cur_unit->direction_y * temp_y >= 0))
 	{
 		// unit is unvisible for cur_unit
 		return 0;
@@ -179,5 +191,12 @@ int Cartographer::DistanceChecking(list<Unit>::iterator cur_unit, list<Unit>::it
 	if ((cur_unit->x - unit->x) * (cur_unit->x - unit->x) + (cur_unit->y - unit->y) * (cur_unit->y - unit->y) > squared_distance)
 		return 0;
 	return 1;
+}
+
+void Cartographer::Modulo(float &num)
+{
+	// taking modulo
+	if (num < 0)
+		num *= -1;
 }
 
