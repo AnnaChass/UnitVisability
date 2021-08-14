@@ -161,7 +161,7 @@ int Cartographer::AngleChecking(list<Unit>::iterator cur_unit, list<Unit>::itera
 		return 1;
 
 	// checking if unit comes into cur_unit's view
-	
+	// all mathematical research could be seen in README file
 	tgG = (unit->x - cur_unit->x == 0) ? MAX_TG : (unit->y - cur_unit->y) / (unit->x - cur_unit->x);
 	tgAminG = (tgA * tgG == -1) ? 0 : (tgA - tgG) / (1 + tgA * tgG);
 
