@@ -59,6 +59,7 @@ int Cartographer::Count()
 			x_right = cur_unit->x + distance,
 			y_low = cur_unit->y - distance,
 			y_high = cur_unit->y + distance;
+		int counter = 0;
 
 		// cutting off obviously unsuitable options: \
             checking if a (un)visible unit is included in a surrounding square with sides of 2 distance
@@ -76,7 +77,7 @@ int Cartographer::Count()
 				unit->y > y_high)
 			{
 				// unit is unvisible for cur_unit
-				cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+				
 				continue;
 			}
 
@@ -84,7 +85,7 @@ int Cartographer::Count()
 			if (!AngleChecking(cur_unit, unit))
 			{
 				// unit is unvisible for cur_unit
-				cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+				
 				continue;
 			}
 
@@ -92,12 +93,12 @@ int Cartographer::Count()
 			if (!DistanceChecking(cur_unit, unit))
 			{
 				// unit is unvisible for cur_unit
-				cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+				
 				continue;
 			}
 
 			// unit is seen by cur_unit
-			cout << "(" << cur_unit->x << "," << cur_unit->y << ") sees (" << unit->x << "," << unit->y << ")" << endl;
+			counter++;
 		}
 
 		// checking unit to the left from cur_unit
@@ -115,7 +116,7 @@ int Cartographer::Count()
 					unit->y > y_high)
 				{
 					// unit is unvisible for cur_unit
-					cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+					
 				}				
 				
 				else
@@ -126,7 +127,7 @@ int Cartographer::Count()
 					if (!AngleChecking(cur_unit, unit))
 					{
 						// unit is unvisible for cur_unit
-						cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
+						
 						
 					}
 
@@ -136,13 +137,11 @@ int Cartographer::Count()
 						if (!DistanceChecking(cur_unit, unit))
 						{
 							// unit is unvisible for cur_unit
-							cout << "(" << cur_unit->x << "," << cur_unit->y << ") does not see (" << unit->x << "," << unit->y << ")" << endl;
-							
 						}
 
 						// unit is seen by cur_unit
-						else 
-							cout << "(" << cur_unit->x << "," << cur_unit->y << ") sees (" << unit->x << "," << unit->y << ")" << endl;
+						else
+							counter++;
 					}
 				}
 
@@ -150,6 +149,8 @@ int Cartographer::Count()
 					break;
 			}
 		}
+
+		cout << "unit (" << cur_unit->x << "," << cur_unit->y << ") sees " << counter << " other units" << endl;
 	}
 	
 	return 1;
